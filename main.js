@@ -106,9 +106,9 @@ scene.add(sun);
 ////// ý tưởng tạo hệ mặt trời: tạo mặt trời nằm ở giữa các hành tinh quay quanh mặt trời với tốc độ khác nhau, các hành tinh cx tự quay quanh mình với tốc độ khác nhau
 ////// cách làm chi tiết:
 //////hàm tạo các hành tinh
-function createPlanete(size, texture, position, ring) {
-    const geo = new THREE.SphereGeometry(size, 30, 30);// 2 tham số sau là số kinh tuyến của mặt cầu và số mặt phẳng tạo mặt cầu giữa 2 kinh tuyến
-    const mat = new THREE.MeshStandardMaterial({
+function createPlanete(radius, texture, position, ring) {
+    const geo = new THREE.SphereGeometry(radius, 30, 30);// 2 tham số sau là số kinh tuyến của mặt cầu và số mặt phẳng tạo mặt cầu giữa 2 kinh tuyến
+    const mat = new THREE.MeshPhongMaterial({
         map: textureLoader.load(texture)
     });
     const mesh = new THREE.Mesh(geo, mat);
@@ -121,6 +121,7 @@ function createPlanete(size, texture, position, ring) {
             ring.innerRadius,
             ring.outerRadius,
             32);
+        
         const ringMat = new THREE.MeshBasicMaterial({
             map: textureLoader.load(ring.texture),
             side: THREE.DoubleSide
@@ -130,7 +131,15 @@ function createPlanete(size, texture, position, ring) {
         ringMesh.position.x = position;
         ringMesh.rotation.x = -0.5 * Math.PI;
     }
+
+    //Thêm quỹ đạo
+    var planetOrbitGeo = new THREE.TorusGeometry(position, 0.1, 120, 480);
+    var planetOrbitMat = new THREE.MeshBasicMaterial(0xffffff);
+    var planetOrbit = new THREE.Mesh(planetOrbitGeo, planetOrbitMat);
+    planetOrbit.rotation.x = -Math.PI/2;
+
     scene.add(obj);
+    scene.add(planetOrbit);
     mesh.position.x = position;// các hành tinh ban đầu đều nằm trên 1 đường thẳng
     return {mesh, obj}// trả về 1 đối tượng 2 thuộc tính : hành tinh và cái điểm quay của nó
 }
@@ -153,7 +162,8 @@ const uranus = createPlanete(7, uranusTexture.src, 176, {
 const neptune = createPlanete(7, neptuneTexture.src, 200);
 const pluto = createPlanete(2.8, plutoTexture.src, 216);
 
-const pointLight = new THREE.PointLight(0xFFFFFF, 2, 300);
+//light
+const pointLight = new THREE.PointLight(0xFFFFFF, 3, 300);
 scene.add(pointLight);
 ///////// hàm thực hiện các phép biến đổi
 function animate() {
