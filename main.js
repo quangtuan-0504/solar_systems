@@ -1,62 +1,64 @@
 import * as THREE from 'three';
-import {OrbitControls} from 'OrbitControls';
-
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import * as dat from 'dat.gui';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
 /////////// lấy các url tới các hình ảnh
 const galaxyTexture = new Image() 
-galaxyTexture.src = 'http://127.0.0.1:5500/../img/galaxy.jpg'
+galaxyTexture.src = './img/galaxy.jpg'
 console.log('url:',galaxyTexture.src)
 //import starsTexture from '../img/stars.jpg';
 const starsTexture = new Image() 
-starsTexture.src = 'http://127.0.0.1:5500/../img/stars.jpg'
+starsTexture.src = './img/stars.jpg'
 
 //import sunTexture from '../img/sun.jpg';
 const sunTexture = new Image() 
-sunTexture.src = 'http://127.0.0.1:5500/../img/sun.jpg'
+sunTexture.src = './img/sun.jpg'
 
 //import mercuryTexture from '../img/mercury.jpg';
 const mercuryTexture = new Image() 
-mercuryTexture.src = 'http://127.0.0.1:5500/../img/mercury.jpg'
+mercuryTexture.src = './img/mercury.jpg'
 
 //import venusTexture from '../img/venus.jpg';
 const venusTexture = new Image() 
-venusTexture.src = 'http://127.0.0.1:5500/../img/stars.jpg'
+venusTexture.src = './img/stars.jpg'
 
 //import earthTexture from '../img/earth.jpg';
 const earthTexture = new Image() 
-earthTexture.src = 'http://127.0.0.1:5500/../img/earth.jpg'
+earthTexture.src = './img/earth.jpg'
 
 //import marsTexture from '../img/mars.jpg';
 const marsTexture = new Image() 
-marsTexture.src = 'http://127.0.0.1:5500/../img/mars.jpg'
+marsTexture.src = './img/mars.jpg'
 
 //import jupiterTexture from '../img/jupiter.jpg';
 const jupiterTexture = new Image() 
-jupiterTexture.src = 'http://127.0.0.1:5500/../img/jupiter.jpg'
+jupiterTexture.src = './img/jupiter.jpg'
 
 //import saturnTexture from '../img/saturn.jpg';
 const saturnTexture = new Image() 
-saturnTexture.src = 'http://127.0.0.1:5500/../img/saturn.jpg'
+saturnTexture.src = './img/saturn.jpg'
 
 //import saturnRingTexture from '../img/saturn ring.png';
 const saturnRingTexture = new Image() 
-saturnRingTexture.src = 'http://127.0.0.1:5500/../img/saturn ring.png'
+saturnRingTexture.src = './img/saturn ring.png'
 
 //import uranusTexture from '../img/uranus.jpg';
 const uranusTexture = new Image() 
-uranusTexture.src = 'http://127.0.0.1:5500/img/uranus.jpg'
+uranusTexture.src = './img/uranus.jpg'
 
 //import uranusRingTexture from '../img/uranus ring.png';
 const uranusRingTexture = new Image() 
-uranusRingTexture.src = 'http://127.0.0.1:5500/../img/uranus ring.png'
+uranusRingTexture.src = './img/uranus ring.png'
 
 //import neptuneTexture from '../img/neptune.jpg';
 const neptuneTexture = new Image() 
-neptuneTexture.src = 'http://127.0.0.1:5500/../img/neptune.jpg'
+neptuneTexture.src = './img/neptune.jpg'
 
 //import plutoTexture from '../img/pluto.jpg';
 const plutoTexture = new Image() 
-plutoTexture.src = 'http://127.0.0.1:5500/../img/pluto.jpg'
+plutoTexture.src = './img/pluto.jpg'
 
 
 ////////////Tạo trình kết xuất, giống như việc chiếu bộ phim lên màn hình tv, dt, màn chiếu
@@ -99,7 +101,8 @@ const textureLoader = new THREE.TextureLoader();
 
 const sunGeo = new THREE.SphereGeometry(16, 30, 30);
 const sunMat = new THREE.MeshBasicMaterial({
-    map: textureLoader.load(sunTexture.src)
+    color: 'rgb(255, 255, 255)',
+    map: textureLoader.load(sunTexture.src),
 });
 const sun = new THREE.Mesh(sunGeo, sunMat);
 scene.add(sun);
@@ -138,6 +141,14 @@ function createPlanete(radius, texture, position, ring) {
     var planetOrbit = new THREE.Mesh(planetOrbitGeo, planetOrbitMat);
     planetOrbit.rotation.x = -Math.PI/2;
 
+    // //Thêm tên -> Thiếu thư viện
+    // var planetName = textLoader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+    //     const geometry = new TextGeometry( 'Hello three.js!')}
+    // );
+    // planetName.position.y = radius;
+    // obj.add(planetName);
+
+
     scene.add(obj);
     scene.add(planetOrbit);
     mesh.position.x = position;// các hành tinh ban đầu đều nằm trên 1 đường thẳng
@@ -165,30 +176,85 @@ const pluto = createPlanete(2.8, plutoTexture.src, 216);
 //light
 const pointLight = new THREE.PointLight(0xFFFFFF, 3, 300);
 scene.add(pointLight);
+
+//Thông số 
+var guiSun = {self_rotation: 0.004}
+var guiMercury = {self_rotation: 0.004, rotate_around_Sun: 0.04}
+var guiVenus = {self_rotation: 0.002, rotate_around_Sun: 0.015}
+var guiEarth = {self_rotation: 0.002, rotate_around_Sun: 0.01}
+var guiMars = {self_rotation: 0.018, rotate_around_Sun: 0.008}
+var guiJupiter = {self_rotation: 0.004, rotate_around_Sun: 0.002}
+var guiSaturn = {self_rotation: 0.038, rotate_around_Sun: 0.0009}
+var guiUranus = {self_rotation: 0.03, rotate_around_Sun: 0.0004}
+var guiNeptune = {self_rotation: 0.032, rotate_around_Sun: 0.0001}
+var guiPluto = {self_rotation: 0.008, rotate_around_Sun: 0.0001}
+
+//dat.gui 
+const datgui = new dat.GUI();
+var datguiSun = datgui.addFolder('Sun');
+datguiSun.add(pointLight, 'intensity', 0, 20);
+datguiSun.add(guiSun, 'self_rotation', 0, 1, 0.001);
+
+var datguiMercury = datgui.addFolder('Mercury');
+datguiMercury.add(guiMercury, 'self_rotation', 0, 1, 0.001)
+datguiMercury.add(guiMercury, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiVenus = datgui.addFolder('Venus');
+datguiVenus.add(guiVenus, 'self_rotation', 0, 1, 0.001)
+datguiVenus.add(guiVenus, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiEarth = datgui.addFolder('Earth');
+datguiEarth.add(guiEarth, 'self_rotation', 0, 1, 0.001)
+datguiEarth.add(guiEarth, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiMars = datgui.addFolder('Mars');
+datguiMars.add(guiMars, 'self_rotation', 0, 1, 0.001)
+datguiMars.add(guiMars, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiJupiter = datgui.addFolder('Jupiter');
+datguiJupiter.add(guiJupiter, 'self_rotation', 0, 1, 0.001)
+datguiJupiter.add(guiJupiter, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiSaturn = datgui.addFolder('Saturn');
+datguiSaturn.add(guiSaturn, 'self_rotation', 0, 1, 0.001)
+datguiSaturn.add(guiSaturn, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiUranus = datgui.addFolder('Uranus');
+datguiUranus.add(guiUranus, 'self_rotation', 0, 1, 0.001)
+datguiUranus.add(guiUranus, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiNeptune = datgui.addFolder('Neptune');
+datguiNeptune.add(guiNeptune, 'self_rotation', 0, 1, 0.001)
+datguiNeptune.add(guiNeptune, 'rotate_around_Sun', 0, 1, 0.01);
+
+var datguiPluto = datgui.addFolder('Pluto');
+datguiPluto.add(guiPluto, 'self_rotation', 0, 1, 0.001)
+datguiPluto.add(guiPluto, 'rotate_around_Sun', 0, 1, 0.01);
+
 ///////// hàm thực hiện các phép biến đổi
 function animate() {
     //Self-rotation, tự quay quanh trục
-    sun.rotateY(0.004);
-    mercury.mesh.rotateY(0.004);
-    venus.mesh.rotateY(0.002);
-    earth.mesh.rotateY(0.02);
-    mars.mesh.rotateY(0.018);
-    jupiter.mesh.rotateY(0.04);
-    saturn.mesh.rotateY(0.038);
-    uranus.mesh.rotateY(0.03);
-    neptune.mesh.rotateY(0.032);
-    pluto.mesh.rotateY(0.008);
+    sun.rotateY(guiSun.self_rotation);
+    mercury.mesh.rotateY(guiMercury.self_rotation);
+    venus.mesh.rotateY(guiVenus.self_rotation);
+    earth.mesh.rotateY(guiEarth.self_rotation);
+    mars.mesh.rotateY(guiMars.self_rotation);
+    jupiter.mesh.rotateY(guiJupiter.self_rotation);
+    saturn.mesh.rotateY(guiSaturn.self_rotation);
+    uranus.mesh.rotateY(guiUranus.self_rotation );
+    neptune.mesh.rotateY(guiNeptune.self_rotation);
+    pluto.mesh.rotateY(guiPluto.self_rotation);
 
     //Around-sun-rotation
-    mercury.obj.rotateY(0.04);
-    venus.obj.rotateY(0.015);
-    earth.obj.rotateY(0.01);
-    mars.obj.rotateY(0.008);
-    jupiter.obj.rotateY(0.002);
-    saturn.obj.rotateY(0.0009);
-    uranus.obj.rotateY(0.0004);
-    neptune.obj.rotateY(0.0001);
-    pluto.obj.rotateY(0.00007);
+    mercury.obj.rotateY(guiMercury.rotate_around_Sun);
+    venus.obj.rotateY(guiVenus.rotate_around_Sun);
+    earth.obj.rotateY(guiEarth.rotate_around_Sun);
+    mars.obj.rotateY(guiMars.rotate_around_Sun);
+    jupiter.obj.rotateY(guiJupiter.rotate_around_Sun);
+    saturn.obj.rotateY(guiSaturn.rotate_around_Sun);
+    uranus.obj.rotateY(guiUranus.rotate_around_Sun);
+    neptune.obj.rotateY(guiNeptune.rotate_around_Sun);
+    pluto.obj.rotateY(guiPluto.rotate_around_Sun);
 
     renderer.render(scene, camera);
 }
