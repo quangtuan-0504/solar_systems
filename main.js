@@ -57,8 +57,8 @@ const neptuneTexture = new Image()
 neptuneTexture.src = './img/neptune.jpg'
 
 //import plutoTexture from '../img/pluto.jpg';
-const plutoTexture = new Image() 
-plutoTexture.src = './img/pluto.jpg'
+const plutoTexture = new Image();
+plutoTexture.src = './img/pluto.jpg';
 
 
 ////////////Tạo trình kết xuất, giống như việc chiếu bộ phim lên màn hình tv, dt, màn chiếu
@@ -110,11 +110,15 @@ scene.add(sun);
 ////// cách làm chi tiết:
 //////hàm tạo các hành tinh
 function createPlanete(radius, texture, position, ring) {
+    //Tạo hành tinh
     const geo = new THREE.SphereGeometry(radius, 30, 30);// 2 tham số sau là số kinh tuyến của mặt cầu và số mặt phẳng tạo mặt cầu giữa 2 kinh tuyến
     const mat = new THREE.MeshPhongMaterial({
         map: textureLoader.load(texture)
     });
     const mesh = new THREE.Mesh(geo, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+
     const obj = new THREE.Object3D();
     obj.add(mesh);// nếu đoạn này add obj vào sun thì các hành tinh đều có tốc độ quay quanh sun giống nhau(cùng tốc độ quay quanh trục với mặt trời)
     //, vì v với mỗi hành tinh ta sẽ tạo obj3D nằm tại vị trí mặt trời, r add hành tinh đó vô obj3D
@@ -137,20 +141,42 @@ function createPlanete(radius, texture, position, ring) {
 
     //Thêm quỹ đạo
     var planetOrbitGeo = new THREE.TorusGeometry(position, 0.1, 120, 480);
-    var planetOrbitMat = new THREE.MeshBasicMaterial(0xffffff);
+    var planetOrbitMat = new THREE.MeshBasicMaterial({
+        color: 'rgb(255, 255, 255)',
+    });
     var planetOrbit = new THREE.Mesh(planetOrbitGeo, planetOrbitMat);
     planetOrbit.rotation.x = -Math.PI/2;
 
-    // //Thêm tên -> Thiếu thư viện
-    // var planetName = textLoader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
-    //     const geometry = new TextGeometry( 'Hello three.js!')}
-    // );
-    // planetName.position.y = radius;
-    // obj.add(planetName);
+    // //Thêm tên -> not visible???
+    // var fontMesh;
+    // const fontLoader = new FontLoader();
+    // fontLoader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', 
+    // function ( font ) {
+    //     const geometry = new TextGeometry( 'Hello', {
+    //         font: font,
+    //         size:80,
+    //         height: 20,
+    //         curveSegments: 12,
+    //         bevelEnabled: true,
+    //         bevelThickness: 10,
+    //         bevelSize: 8,
+    //         bevelOffset: 0,
+    //         bevelSegments: 5,
+    //     } );
+    //     const material = new THREE.MeshBasicMaterial({
+    //         color: 'rgb(255, 0, 0)',
+    //     });
 
+    //     fontMesh = new THREE.Mesh(geometry, material);
+    //     planetName.position.set(radius, radius, radius);
+
+    //     //add name into the scene
+    //     scene.add(fontMesh);
+    // } );
+    
 
     scene.add(obj);
-    scene.add(planetOrbit);
+    scene.add(planetOrbit);//Thêm quỹ đạo
     mesh.position.x = position;// các hành tinh ban đầu đều nằm trên 1 đường thẳng
     return {mesh, obj}// trả về 1 đối tượng 2 thuộc tính : hành tinh và cái điểm quay của nó
 }
@@ -189,7 +215,7 @@ var guiUranus = {self_rotation: 0.03, rotate_around_Sun: 0.0004}
 var guiNeptune = {self_rotation: 0.032, rotate_around_Sun: 0.0001}
 var guiPluto = {self_rotation: 0.008, rotate_around_Sun: 0.0001}
 
-//dat.gui 
+//dat.gui build bộ điều chỉnh tham số
 const datgui = new dat.GUI();
 var datguiSun = datgui.addFolder('Sun');
 datguiSun.add(pointLight, 'intensity', 0, 20);
@@ -231,7 +257,7 @@ var datguiPluto = datgui.addFolder('Pluto');
 datguiPluto.add(guiPluto, 'self_rotation', 0, 1, 0.001)
 datguiPluto.add(guiPluto, 'rotate_around_Sun', 0, 1, 0.01);
 
-///////// hàm thực hiện các phép biến đổi
+///////// hàm thực hiện các phép biến đổi (animation)
 function animate() {
     //Self-rotation, tự quay quanh trục
     sun.rotateY(guiSun.self_rotation);
